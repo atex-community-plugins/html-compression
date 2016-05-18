@@ -68,8 +68,3 @@ Atex Polopoly Source Code License
 Version 1.0 February 2012
 
 See file **LICENSE** for details
-
-## What is Mozilla Persona?
-
-![Mozilla Persona Plugin](flow.png "Mozilla Persona Plugin")
-
