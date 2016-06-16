@@ -1,15 +1,13 @@
 package com.atex.plugins.html.compression.filter;
 
 import com.atex.plugins.html.compression.ConfigPolicy;
-import com.google.javascript.jscomp.CompilationLevel;
-import com.googlecode.htmlcompressor.compressor.ClosureJavaScriptCompressor;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
+import com.googlecode.htmlcompressor.compressor.YuiJavaScriptCompressor;
 import com.polopoly.application.Application;
 import com.polopoly.application.IllegalApplicationStateException;
 import com.polopoly.application.servlet.ApplicationServletUtil;
 import com.polopoly.cm.ContentId;
 import com.polopoly.cm.ExternalContentId;
-import com.polopoly.cm.client.CMException;
 import com.polopoly.cm.client.CmClient;
 import com.polopoly.cm.policy.PolicyCMServer;
 
@@ -31,6 +29,7 @@ public class CompressResponseFilter implements Filter {
     public static final ContentId CONTENT_ID = new ExternalContentId(TEMPLATE);
 
     private Double warnSize = null;
+    private volatile int numErrors = 0;
 
     @Override
     public void doFilter(final ServletRequest req, final ServletResponse resp,
@@ -41,18 +40,33 @@ public class CompressResponseFilter implements Filter {
 
         chain.doFilter(req, responseWrapper);
 
-        String servletResponse = new String(responseWrapper.toString());
-        String compressed = compressor.compress(servletResponse);
+        if (compressor != null) {
+            //LOGGER.info ("Processing "  + resp.getContentType() + " for " + req);
+            if (!resp.isCommitted() && resp.getContentType() != null && responseWrapper.getContentType().startsWith("text/html")) {
+                try {
+                    String servletResponse = new String(responseWrapper.toString());
+                    String compressed = compressor.compress(servletResponse);
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        baos.write(compressed.getBytes());
-        double compressedSize = baos.size() / ((double) 1024 * 1024);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    baos.write(compressed.getBytes());
+                    double compressedSize = baos.size() / ((double) 1024 * 1024);
 
-        if (warnSize > 0.0 && compressedSize > warnSize) {
-            LOGGER.log(Level.WARNING, String.format("Page output greater than %s mb limit for "
-                    + "path page %s", warnSize, ((HttpServletRequest) req).getRequestURL().toString()));
+                    if (warnSize > 0.0 && compressedSize > warnSize) {
+                        LOGGER.log(Level.WARNING, String.format("Page output greater than %s mb limit for "
+                                + "path page %s", warnSize, ((HttpServletRequest) req).getRequestURL().toString()));
+                    }
+                    resp.getWriter().write(compressed);
+                    numErrors = numErrors / 5;
+                } catch (Exception e) {
+                    numErrors++;
+                    LOGGER.log(Level.SEVERE, e.getMessage(), e);
+                    if (numErrors > 200) {
+                        LOGGER.warning("Disabling HTML Compression due to number of errors");
+                        compressor = null;
+                    }
+                }
+            }
         }
-        resp.getWriter().write(compressed);
     }
 
     @Override
@@ -65,20 +79,24 @@ public class CompressResponseFilter implements Filter {
             PolicyCMServer policyCmServer = cmClient.getPolicyCMServer();
             configPolicy = (ConfigPolicy) policyCmServer.getPolicy(CONTENT_ID);
             warnSize = configPolicy.getWarningSize();
+
+            boolean compressionEnabled = configPolicy.isCompressionEnabled();
+
+            if (compressionEnabled) {
+                compressor = new HtmlCompressor();
+                compressor.setCompressCss(true);
+                compressor.setJavaScriptCompressor(new YuiJavaScriptCompressor());
+                compressor.setCompressJavaScript(false);
+                compressor.setRemoveIntertagSpaces(true);
+                compressor.setRemoveMultiSpaces(true);
+            }
         } catch (IllegalApplicationStateException e) {
             throw new ServletException("Failed to get CmClient", e);
-        } catch (CMException e) {
+        } catch (Exception e) {
             LOGGER.log(Level.SEVERE, e.getMessage(), e);
+            compressor = null;
         }
 
-        boolean compressionEnabled = configPolicy.isCompressionEnabled();
-
-        if (compressionEnabled) {
-            compressor = new HtmlCompressor();
-            compressor.setCompressCss(true);
-            compressor.setJavaScriptCompressor(new ClosureJavaScriptCompressor(CompilationLevel.SIMPLE_OPTIMIZATIONS));
-            compressor.setCompressJavaScript(true);
-        }
     }
 
     @Override
