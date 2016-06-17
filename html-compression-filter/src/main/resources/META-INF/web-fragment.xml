@@ -4,7 +4,7 @@
               xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_1.xsd"
               id="WebAppFragment_ID"
               version="3.1">
-<!--
+
 <name>html-compression-fragment</name>
 
 <filter>
@@ -15,6 +15,13 @@
 <filter-mapping>
     <filter-name>htmlCompression</filter-name>
     <url-pattern>/*</url-pattern>
+    <dispatcher>REQUEST</dispatcher>
+    <dispatcher>FORWARD</dispatcher>
 </filter-mapping>
--->
+<ordering>
+    <before>
+        <others/>
+    </before>
+</ordering>
+
 </web-fragment>

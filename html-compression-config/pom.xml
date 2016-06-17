@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>html-compression</artifactId>
+        <groupId>com.atex.plugins</groupId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>html-compression-config</artifactId>
+    <properties>
+        <polopoly.version>10.16.0-fp1</polopoly.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <!-- Used for compilation against public Polopoly API:s -->
+            <groupId>com.polopoly</groupId>
+            <artifactId>polopoly</artifactId>
+            <version>${polopoly.version}</version>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.polopoly.extensions</groupId>
+                <artifactId>p-maven-plugin</artifactId>
+                <version>${polopoly.version}</version>
+                <configuration>
+                    <generatePluginXml>true</generatePluginXml>
+                    <optionalPolopolyDir>true</optionalPolopolyDir>
+                </configuration>
+                <dependencies>
+                    <dependency>
+                        <groupId>jboss</groupId>
+                        <artifactId>jbossall-client</artifactId>
+                        <version>4.0.5</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>com.polopoly</groupId>
+                        <artifactId>polopoly</artifactId>
+                        <version>${polopoly.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>pack-content</id>
+                        <goals>
+                            <goal>dot-content-to-xml</goal>
+                            <goal>pack</goal>
+                        </goals>
+                        <phase>package</phase>
+                        <configuration>
+                            <contentDataFileResources>
+                                <!-- Uncomment to include javascript source files on plugin files
+                                    content. <files> <directory>${project.basedir}/src/main/javascript</directory>
+                                    <includes> <include>**/*.js</include> </includes> </files> -->
+                                <!-- Uncomment to include css source files on plugin files content.
+                                    <files> <directory>${project.basedir}/src/main/css</directory> <includes>
+                                    <include>**/*.css</include> </includes> </files> -->
+                                <files>
+                                    <directory>${project.basedir}/src/main/contentfiles</directory>
+                                    <includes>
+                                        <include>**</include>
+                                    </includes>
+                                </files>
+                                <!-- Remove this source directory if not used -->
+                                <!--<files> -->
+                                <!--<directory>${project.build.directory}/generated-contentfiles</directory> -->
+                                <!--<includes> -->
+                                <!--<include>**</include> -->
+                                <!--</includes> -->
+                                <!--</files> -->
+                            </contentDataFileResources>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>generate-test-contentdata-jar</id>
+                        <goals>
+                            <goal>dot-content-to-xml</goal>
+                            <goal>pack</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <generatedContent>
+                                    <directory>${project.basedir}/src/test/content</directory>
+                                    <includes>
+                                        <include>*.content</include>
+                                        <include>**/*.content</include>
+                                    </includes>
+                                </generatedContent>
+                            </sources>
+                            <targetDirectory>${project.build.directory}/test-generated-content</targetDirectory>
+                            <generatePluginXml>false</generatePluginXml>
+                            <classifier>test-contentdata</classifier>
+                            <contentDataXmlResources>
+                                <contentXml>
+                                    <directory>${project.basedir}/src/test/content</directory>
+                                    <includes>
+                                        <include>*.xml</include>
+                                        <include>**/*.xml</include>
+                                    </includes>
+                                </contentXml>
+                                <generatedContent>
+                                    <directory>${project.build.directory}/test-generated-content</directory>
+                                    <includes>
+                                        <include>*.xml</include>
+                                        <include>**/*.xml</include>
+                                    </includes>
+                                </generatedContent>
+                            </contentDataXmlResources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

@@ -41,7 +41,6 @@ public class CompressResponseFilter implements Filter {
         chain.doFilter(req, responseWrapper);
 
         if (compressor != null) {
-            //LOGGER.info ("Processing "  + resp.getContentType() + " for " + req);
             if (!resp.isCommitted() && resp.getContentType() != null && responseWrapper.getContentType().startsWith("text/html")) {
                 try {
                     String servletResponse = new String(responseWrapper.toString());

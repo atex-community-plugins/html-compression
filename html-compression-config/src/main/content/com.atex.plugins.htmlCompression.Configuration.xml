@@ -4,19 +4,15 @@
     <policy>com.atex.plugins.html.compression.ConfigPolicy</policy>
     <editor>com.polopoly.cm.app.widget.OTopPolicyWidget</editor>
     <viewer>com.polopoly.cm.app.widget.OTopPolicyWidget</viewer>
-
     <type>AppConfig</type>
-
     <param name="EditState_saveAndInsert">false</param>
     <param name="EditState_saveAndView">true</param>
     <param name="EditState_saveAndClose">true</param>
     <param name="ViewState_insert">false</param>
-
     <field name="enabled" input-template="p.Checkbox" label="com.atex.plugins.htmlCompression.enabled">
       <param name="checked">true</param>
     </field>
     <field name="warnSize" input-template="p.TextInput" label="com.atex.plugins.htmlCompression.warning">
     </field>
-
 </input-template>
 </template-definition>
