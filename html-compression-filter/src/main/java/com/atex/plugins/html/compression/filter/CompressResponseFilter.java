@@ -25,7 +25,7 @@ public class CompressResponseFilter implements Filter {
     private CmClient cmClient;
     private static final Logger LOGGER = Logger.getLogger(CompressResponseFilter.class.getName());
 
-    public static final String TEMPLATE = "com.atex.plugins.htmlCompression.ConfigHome";
+    public static final String TEMPLATE = "plugins.com.atex.plugins.htmlCompression.Config";
     public static final ContentId CONTENT_ID = new ExternalContentId(TEMPLATE);
 
     private Double warnSize = null;

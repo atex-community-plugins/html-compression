@@ -2,8 +2,8 @@
 <template-definition version="1.0" xmlns="http://www.polopoly.com/polopoly/cm/app/xml">
   <input-template name="com.atex.plugins.htmlCompression.Configuration" label="HTML compression configuration">
     <policy>com.atex.plugins.html.compression.ConfigPolicy</policy>
-    <editor>com.polopoly.cm.app.widget.OTopPolicyWidget</editor>
-    <viewer>com.polopoly.cm.app.widget.OTopPolicyWidget</viewer>
+    <editor>com.polopoly.plugin.OPluginConfigContextPolicyWidget</editor>
+    <viewer>com.polopoly.plugin.OPluginConfigContextPolicyWidget</viewer>
     <type>AppConfig</type>
     <param name="EditState_saveAndInsert">false</param>
     <param name="EditState_saveAndView">true</param>

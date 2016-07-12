@@ -3,4 +3,3 @@ major:appconfig
 inputtemplate:com.atex.plugins.htmlCompression.Configuration
 securityparent:p.siteengine.Configuration.d
 name:Html Compression Configuration
-
