@@ -1,51 +1,40 @@
 html-compression
-===============
+================
 
-In order for the html compression to be available web application you need to modify your web.xml and add the html compression filter that comes with the plugin. The filter definition is available in a file called web-fragment.xml but you can also take it from here.
+This plugin uses a Servlet filter to handle the default response back from rendering velocity templates and compresses the HTML to remnove extraneuous whitespace etc.
+It will ignore anything that the CM Servlet is defined as ignoring by using RequestPrepator.getIgnoreRequest on the incoming request.
+
+
+In order for the html compression to be available you need to add the configuration depdendecncy to your top POM.
 ```
-<filter>
-    <filter-name>htmlCompression</filter-name>
-    <filter-class>com.atex.plugins.html.compression.filter.CompressResponseFilter</filter-class>
-</filter>
-
-<filter-mapping>
-    <filter-name>htmlCompression</filter-name>
-    <url-pattern>/*</url-pattern>
-</filter-mapping>
+    <dependency>
+        <groupId>com.atex.plugins</groupId>
+        <artifactId>html-compression-config</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
+      <classifier>contentdata</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.atex.plugins</groupId>
+      <artifactId>html-compression-config</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+    </dependency>
 ```
 
-Also add dependecies :
+And to webapp-dispatcher add the following dependendancy to ensure that the web-fragment.xml is added to the project.
 
 ```
-<dependency>
-  <groupId>javax</groupId>
-  <artifactId>javaee-api</artifactId>
-  <version>6.0</version>
-  <scope>provided</scope>
-</dependency>
-<dependency>
-  <groupId>com.googlecode.htmlcompressor</groupId>
-  <artifactId>htmlcompressor</artifactId>
-  <version>1.5.2</version>
-</dependency>
-<dependency>
-  <groupId>com.yahoo.platform.yui</groupId>
-  <artifactId>yuicompressor</artifactId>
-  <version>2.4.7</version>
-</dependency>
-<dependency>
-  <groupId>com.google.javascript</groupId>
-  <artifactId>closure-compiler</artifactId>
-  <version>v20131014</version>
-</dependency>
-
+    <dependency>
+      <groupId>com.atex.plugins</groupId>
+      <artifactId>html-compression-filter</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+    </dependency>
 ```
 
 To disable/enable the plugin or add a warning for output limit go to plugins configurations under the Root Deparment plugins configurations,
 after that a container restart is required.
 
 ## Polopoly Version
-10.16.0-fp1
+10.16.2
 
 ## Code Status
 The code in this repository is provided with the following status: **EXAMPLE**

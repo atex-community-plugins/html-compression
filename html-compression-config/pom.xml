@@ -5,7 +5,7 @@
     <parent>
         <artifactId>html-compression</artifactId>
         <groupId>com.atex.plugins</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -17,7 +17,7 @@
 
     <artifactId>html-compression-config</artifactId>
     <properties>
-        <polopoly.version>10.16.0-fp1</polopoly.version>
+        <polopoly.version>10.16.2</polopoly.version>
     </properties>
 
     <dependencies>

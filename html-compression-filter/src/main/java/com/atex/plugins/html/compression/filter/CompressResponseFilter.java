@@ -6,10 +6,9 @@ import com.googlecode.htmlcompressor.compressor.YuiJavaScriptCompressor;
 import com.polopoly.application.Application;
 import com.polopoly.application.IllegalApplicationStateException;
 import com.polopoly.application.servlet.ApplicationServletUtil;
-import com.polopoly.cm.ContentId;
-import com.polopoly.cm.ExternalContentId;
 import com.polopoly.cm.client.CmClient;
 import com.polopoly.cm.policy.PolicyCMServer;
+import com.polopoly.cm.servlet.RequestPreparator;
 
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
@@ -21,12 +20,12 @@ import java.util.logging.Logger;
 
 public class CompressResponseFilter implements Filter {
 
+    private static final String FIRST_TIME = CompressResponseFilter.class.getCanonicalName()+".processed";
     private HtmlCompressor compressor;
     private CmClient cmClient;
     private static final Logger LOGGER = Logger.getLogger(CompressResponseFilter.class.getName());
 
-    public static final String TEMPLATE = "plugins.com.atex.plugins.htmlCompression.Config";
-    public static final ContentId CONTENT_ID = new ExternalContentId(TEMPLATE);
+
 
     private Double warnSize = null;
     private volatile int numErrors = 0;
@@ -35,12 +34,18 @@ public class CompressResponseFilter implements Filter {
     public void doFilter(final ServletRequest req, final ServletResponse resp,
                          final FilterChain chain) throws IOException, ServletException {
 
-        CharResponseWrapper responseWrapper = new CharResponseWrapper(
-                (HttpServletResponse) resp);
+        ServletResponse responseWrapper = resp;
+
+        boolean doCompression = compressor != null && req.getAttribute(FIRST_TIME) == null && !RequestPreparator.getIgnoreRequest(req);
+
+        if (doCompression) {
+            responseWrapper = new CharResponseWrapper((HttpServletResponse) resp);
+        }
+        req.setAttribute(FIRST_TIME,true);
 
         chain.doFilter(req, responseWrapper);
 
-        if (compressor != null) {
+        if (doCompression) {
             if (!resp.isCommitted() && resp.getContentType() != null && responseWrapper.getContentType().startsWith("text/html")) {
                 try {
                     String servletResponse = new String(responseWrapper.toString());
@@ -76,12 +81,13 @@ public class CompressResponseFilter implements Filter {
             Application app = ApplicationServletUtil.getApplication(config.getServletContext());
             cmClient = app.getPreferredApplicationComponent(CmClient.class);
             PolicyCMServer policyCmServer = cmClient.getPolicyCMServer();
-            configPolicy = (ConfigPolicy) policyCmServer.getPolicy(CONTENT_ID);
+            configPolicy = ConfigPolicy.getInstance(policyCmServer);
             warnSize = configPolicy.getWarningSize();
 
             boolean compressionEnabled = configPolicy.isCompressionEnabled();
 
             if (compressionEnabled) {
+                LOGGER.info ("HTML Compression Enabled, warning size = " + warnSize);
                 compressor = new HtmlCompressor();
                 compressor.setCompressCss(true);
                 compressor.setJavaScriptCompressor(new YuiJavaScriptCompressor());

@@ -5,23 +5,23 @@
               id="WebAppFragment_ID"
               version="3.1">
 
-<name>html-compression-fragment</name>
+    <name>html-compression-fragment</name>
 
-<filter>
-    <filter-name>htmlCompression</filter-name>
-    <filter-class>com.atex.plugins.html.compression.filter.CompressResponseFilter</filter-class>
-</filter>
+    <filter>
+        <filter-name>htmlCompression</filter-name>
+        <filter-class>com.atex.plugins.html.compression.filter.CompressResponseFilter</filter-class>
+    </filter>
 
-<filter-mapping>
-    <filter-name>htmlCompression</filter-name>
-    <url-pattern>/*</url-pattern>
-    <dispatcher>REQUEST</dispatcher>
-    <dispatcher>FORWARD</dispatcher>
-</filter-mapping>
-<ordering>
-    <before>
-        <others/>
-    </before>
-</ordering>
+    <filter-mapping>
+        <filter-name>htmlCompression</filter-name>
+        <url-pattern>/*</url-pattern>
+        <dispatcher>REQUEST</dispatcher>
+        <dispatcher>FORWARD</dispatcher>
+    </filter-mapping>
+    <ordering>
+        <before>
+            <others/>
+        </before>
+    </ordering>
 
 </web-fragment>
