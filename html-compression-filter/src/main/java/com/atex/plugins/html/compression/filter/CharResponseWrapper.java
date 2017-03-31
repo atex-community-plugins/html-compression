@@ -2,8 +2,7 @@ package com.atex.plugins.html.compression.filter;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
-import java.io.CharArrayWriter;
-import java.io.PrintWriter;
+import java.io.*;
 
 public class CharResponseWrapper extends HttpServletResponseWrapper {
     private final CharArrayWriter output;
@@ -15,11 +14,16 @@ public class CharResponseWrapper extends HttpServletResponseWrapper {
 
     public CharResponseWrapper(final HttpServletResponse response) {
         super(response);
+
         output = new CharArrayWriter();
     }
 
     @Override
-    public PrintWriter getWriter() {
+    public PrintWriter getWriter() throws IOException{
+        if(this.getContentType().startsWith("application/rss+xml")){
+            return super.getWriter();
+        }
+
         return new PrintWriter(output);
     }
 }
