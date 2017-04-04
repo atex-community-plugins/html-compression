@@ -1,5 +1,20 @@
 package com.atex.plugins.html.compression.filter;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import com.atex.plugins.html.compression.ConfigPolicy;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 import com.googlecode.htmlcompressor.compressor.YuiJavaScriptCompressor;
@@ -9,14 +24,6 @@ import com.polopoly.application.servlet.ApplicationServletUtil;
 import com.polopoly.cm.client.CmClient;
 import com.polopoly.cm.policy.PolicyCMServer;
 import com.polopoly.cm.servlet.RequestPreparator;
-
-import javax.servlet.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class CompressResponseFilter implements Filter {
 
@@ -29,6 +36,7 @@ public class CompressResponseFilter implements Filter {
 
     private Double warnSize = null;
     private volatile int numErrors = 0;
+    static final Pattern PREVIEW_RE = Pattern.compile("^/preview/((?!polopoly_fs)[^/]+/)?\\d+\\.\\d+");
 
     @Override
     public void doFilter(final ServletRequest req, final ServletResponse resp,
@@ -36,7 +44,7 @@ public class CompressResponseFilter implements Filter {
 
         ServletResponse responseWrapper = resp;
 
-        boolean doCompression = compressor != null && req.getAttribute(FIRST_TIME) == null && !RequestPreparator.getIgnoreRequest(req);
+        boolean doCompression = (compressor != null) && (req.getAttribute(FIRST_TIME) == null) && !ignoreRequest((HttpServletRequest) req);
 
         if (doCompression) {
             responseWrapper = new CharResponseWrapper((HttpServletResponse) resp);
@@ -78,6 +86,18 @@ public class CompressResponseFilter implements Filter {
                 }
             }
         }
+    }
+
+    private boolean ignoreRequest(final HttpServletRequest request) {
+        if (RequestPreparator.getIgnoreRequest(request)) {
+
+            // it looks like the "/preview" url is ignored, since we need
+            // to enable the html compression for those url anyway
+
+            final String requestURI = request.getRequestURI();
+            return !PREVIEW_RE.matcher(requestURI).find();
+        }
+        return false;
     }
 
     @Override

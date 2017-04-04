@@ -6,6 +6,7 @@
         <artifactId>html-compression</artifactId>
         <groupId>com.atex.plugins</groupId>
         <version>1.0.3-SNAPSHOT</version>
+        <relativePath>../</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
