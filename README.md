@@ -51,6 +51,26 @@ The code has been identified in an implementation project to be generic enough t
 The code is provided with full product support, just as the core Polopoly product itself.
 If you modify the code (outside of configuraton files), the support is voided.
 
+## Alternative Approach
+Add the following to velocity.properties
+
+userdirective=com.polopoly.cm.servlet.velocity.directives.FileDirective, \
+  com.polopoly.cm.servlet.velocity.directives.LinkDirective, \
+  com.polopoly.cm.servlet.velocity.directives.RenderDirective, \
+  com.polopoly.cm.servlet.velocity.directives.LogDirective, \
+  com.polopoly.cm.servlet.velocity.directives.ImageDirective, \
+  com.polopoly.cm.servlet.velocity.directives.ImageResourceDirective, \
+  com.polopoly.cm.servlet.velocity.directives.ArticleHitDirective, \
+  com.polopoly.cm.servlet.velocity.directives.RenderWithFallbackDirective, \
+  com.googlecode.htmlcompressor.velocity.HtmlCompressorDirective
+
+userdirective.compressHtml.removeIntertagSpaces = true
+userdirective.compressHtml.compressCss = true
+
+and then wrap the HTML you want to compress with #renderHTML ()
+
+See https://code.google.com/archive/p/htmlcompressor/ for more details.
+
 
 ## License
 Atex Polopoly Source Code License
