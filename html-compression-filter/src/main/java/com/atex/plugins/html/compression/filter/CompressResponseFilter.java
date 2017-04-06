@@ -1,20 +1,5 @@
 package com.atex.plugins.html.compression.filter;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.regex.Pattern;
-
-import javax.servlet.Filter;
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.atex.plugins.html.compression.ConfigPolicy;
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 import com.googlecode.htmlcompressor.compressor.YuiJavaScriptCompressor;
@@ -24,6 +9,15 @@ import com.polopoly.application.servlet.ApplicationServletUtil;
 import com.polopoly.cm.client.CmClient;
 import com.polopoly.cm.policy.PolicyCMServer;
 import com.polopoly.cm.servlet.RequestPreparator;
+
+import javax.servlet.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 public class CompressResponseFilter implements Filter {
 
@@ -54,8 +48,8 @@ public class CompressResponseFilter implements Filter {
         chain.doFilter(req, responseWrapper);
 
         if (doCompression) {
-            if (!resp.isCommitted()) {
-                if (resp.getContentType() != null && responseWrapper.getContentType().startsWith("text/html")) {
+            if (!responseWrapper.isCommitted()) {
+                if (responseWrapper.getContentType() != null && responseWrapper.getContentType().startsWith("text/html")) {
                     try {
                         String servletResponse = ((CharResponseWrapper) responseWrapper).getCaptureAsString();
                         String compressed = compressor.compress(servletResponse);

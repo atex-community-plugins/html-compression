@@ -58,8 +58,14 @@ public class CharResponseWrapper extends HttpServletResponseWrapper {
         }
 
         if (writer == null) {
-            writer = new PrintWriter(new OutputStreamWriter(capture,
-                    getCharacterEncoding()));
+            String ct = getContentType();
+            // If content type already defined 
+            if (ct != null && !ct.startsWith("text/html")) {
+                writer = super.getWriter();
+            } else {
+                writer = new PrintWriter(new OutputStreamWriter(capture,
+                        getCharacterEncoding()));
+            }
         }
 
         return writer;
